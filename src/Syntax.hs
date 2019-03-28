@@ -133,7 +133,7 @@ alcF phi = case phi of
     All x p -> [(All x p, p)] ++ (alcF p)
     Ex x p -> [(Ex x p, p)] ++ (alcF p)
 
--- Tipo que define una substitucion (el indice de la variable a sustituir por el termino que la remplazara)
+-- Tipo que define una substitucion (el indice de la variable a sustituir y el termino que la remplazara)
 type Subst = [(Ind,Term)]
 
 -- Recibe una substitucion y verifica si es valida o no
@@ -191,7 +191,7 @@ tieneRep l = case l of
             then True
             else tieneRep xs
 
---Puntos extras: vAlfaEq, renVL (alfa equivalente), renVLconj, apSubF2
+--PUNTOS EXTRA: vAlfaEq, renVL (alfa equivalente), renVLconj, apSubF2
 
 -- Recive una formula y una lista de indices de variables
 -- Devuelve una formula alfa-equivalente donde los nombres de las variables ligadas
@@ -223,6 +223,10 @@ renVL:: Form -> Form
 renVL p = renVLconj p (fv p)
 
 -- Recibe dos formulas y regresa verdadero si son alfa-equivalentes
+-- Compara subformula a subformula, y si son iguales, regresa verdadero
+-- En el caso de las subformulas con cuantificadores, sustituye la variable
+-- ligada en ambos casos por una variable que no aparezca en ninguna de las dos subformulas
+-- aplicando la funcion apsubF al alcance del cuantificador
 vAlfaEq:: Form -> Form -> Bool
 vAlfaEq phi psi = case phi of
     TrueF -> case psi of
@@ -269,7 +273,9 @@ vAlfaEq phi psi = case phi of
 -- Devuelve una nueva funcion con la substitucion aplicada
 -- Si la variable a substituir o el nuevo termino es igual a una variable ligada
 -- La substitucion se aplicara sobre una formula alfa-equivalente donde no coincidan
--- Para que la sustitucion sea posible
+-- para que la sustitucion sea posible
+-- Para hacer esto se hace uso de la funcion renVLconj donde la formula es un argumento
+-- Y el otro es la lista de variables en la sustitucion
 apSubF2 :: Form -> Subst -> Form
 apSubF2 phi sus = apsubF (renVLconj phi lv) sus
     where lv = union xs ts 
