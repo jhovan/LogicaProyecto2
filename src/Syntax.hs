@@ -42,6 +42,7 @@ instance Show Form where
         Ex x p -> "Exist " ++ show x ++ " (" ++ show p ++ ")"
 
 -- Define el comportamiento del metodo Eq (==) entre terminos
+-- Compara subtermino a subtermino
 instance Eq Term where
     (==) t1 t2 = case t1 of
         V x -> case t2 of
