@@ -3,13 +3,13 @@ module Semantics where
 import Syntax
 
 -- Tipo de interpretacion de una funcion
--- Recibe el nombre de la funcion, la lista de argumentos y devuelve un elemento de M
+-- Es una funcion que recibe el nombre de la funcion, la lista de argumentos y devuelve un elemento de M
 type IntF a = Nombre -> [a] -> a
 -- Tipo de interpretacion de un predicado
--- Recibe el nombre del predicado, la lista de argumentos y devuelve un booleano
+-- Es una funcion que recibe el nombre del predicado, la lista de argumentos y devuelve un booleano
 type IntR a = Nombre -> [a] -> Bool
 -- Tipo de estado
--- Recibe el indice de una variable y devuelve un elemento de M
+-- Es una funcion que recibe el indice de una variable y devuelve un elemento de M
 type Estado a = Ind -> a
 
 -- La estrcutura, que se compone del conjunto M, y la interpretacion de funciones y predicados
@@ -25,7 +25,8 @@ actEst e x n = ne
 
 -- Interpretacion de terminos
 -- Recibe un estado de las variables, la interpretacion de una funcion y un termino
--- Devuelve un elmento de M (que depende del estado y la interpretacion de la funcion, si aplica)
+-- Devuelve un elemento de M (que depende del estado de las variables y la interpretacion de la funcion)
+-- Basicamente aplica la funcion de estado a todos llas variables del termino
 iTerm :: Estado a -> IntF a -> Term -> a
 iTerm e iF t = case t of
     V x -> e x
@@ -35,6 +36,10 @@ iTerm e iF t = case t of
 -- Recibe una estructura, un estado de las variables y una formula
 -- Devuelve verdadero, si la formula es satisfacible con esa estructura y estado de las variables
 -- Devuelve falso en caso contrario
+-- Es similar a la interpretacion de proposiciones, pero para los terminos utiliza la interpretacion de 
+-- terminos, para los predicados utiliza la interpretacion de predicados y para los cuantificadores
+-- evalua con un OR a todas las posibles interpretaciones de la formula en el caso del cuantificador existencial
+-- y con un AND en el caso del cuantificador universal
 iForm :: Eq a => Estructura a -> Estado a -> Form -> Bool
 iForm str e phi = case phi of
     FalseF -> False
